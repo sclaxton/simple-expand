@@ -207,7 +207,7 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             var isExpanded = that.toggleCss(expander);
 
             if (that.settings.hideMode === "fadeToggle") {
-                targets.fadeToggle(150);
+                targets.fadeToggle(100);
             } else if (that.settings.hideMode === "basic") {
                 targets.toggle();
             } else if ($.isFunction(that.settings.hideMode)) {
@@ -272,8 +272,8 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             //    register to targets' click event to toggle them on click
             jquery.each(function () {
                 var expander = $(this);
-
-                var targetSelector = expander.attr("data-expander-target") || that.settings.defaultTarget;
+                var override_default_selector = expander.attr("data-expander-target")
+                var targetSelector =  override_default_selector || that.settings.defaultTarget;
                 var searchMode = expander.attr("data-expander-target-search") || that.settings.defaultSearchMode;
 
                 var targets = that.findTargets(expander, searchMode, targetSelector);
@@ -290,7 +290,15 @@ WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
                 that.setInitialState(expander, targets);
 
                 // hook the click on the expander
-                expander.click(function () {
+                expander.on("click", function () {
+                    override_default_selector = expander.attr("data-expander-target")
+                    if (override_default_selector) {
+                        targetSelector = override_default_selector
+                    }
+                    else {
+                        targetSelector = that.settings.defaultTarget
+                    }
+                    targets = that.findTargets(expander, searchMode, targetSelector)  
                     return that.toggle(expander, targets);
                 });
             });
